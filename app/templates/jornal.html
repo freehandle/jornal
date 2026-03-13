@@ -1,0 +1,200 @@
+{{$mucua := .NomeMucua}}
+{{$arroba := .Arroba}}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jornal de {{.Arroba}}</title>
+    <link rel="stylesheet" href="{{.NomeMucua}}/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body class="corTerciaria">
+    <header>
+        <div class="masthead">
+            <a href="{{.NomeMucua}}/jornal/{{.Arroba}}">
+                <h1 class="titulo-jornal">Jornal de {{.Arroba}}</h1>
+            </a>
+            <p class="data-edicao">{{.DataAtual}}</p>
+        </div>
+        <hr class="linha-separadora">
+        {{if .Logado}}
+        <div class="barra-topo">
+            <a class="fakebutton botaoSecundario tituloBotao" href="{{.NomeMucua}}/sair">
+                <p id="textoSair">Sair</p>
+            </a>
+        </div>
+        {{end}}
+    </header>
+
+    <div class="postagens">
+        <div class="categorias">
+            <div id="hoje" class="categoria categoriaSelecionada" onclick="selecionarAba(this)">
+                <p>Hoje</p>
+            </div>
+            <div id="texto" class="categoria" onclick="selecionarAba(this)">
+                <p>Texto</p>
+            </div>
+            <div id="imagem" class="categoria" onclick="selecionarAba(this)">
+                <p>Imagem</p>
+            </div>
+            <div id="audio" class="categoria" onclick="selecionarAba(this)">
+                <p>Áudio</p>
+            </div>
+        </div>
+
+        <div class="carrossel">
+            <!-- Hoje -->
+            <section class="listaCards" data-categoria="hoje">
+                {{if .Textos}}
+                {{with index .Textos 0}}
+                <article class="card sombraG" data-categoria="hoje">
+                    <div class="cabecalhoCard corPrimaria">
+                        <p class="tituloCabecalho">Texto</p>
+                    </div>
+                    <p class="dataCard">{{.Data}}</p>
+                    <br>
+                    <p class="textoCard textoLimitado">{{.Conteudo}}</p>
+                </article>
+                {{end}}
+                {{end}}
+                {{if .Imagens}}
+                {{with index .Imagens 0}}
+                <article class="card sombraG" data-categoria="hoje">
+                    <div class="cabecalhoCard corPrimaria">
+                        <p class="tituloCabecalho">Imagem</p>
+                    </div>
+                    <p class="dataCard">{{.Data}}</p>
+                    <br>
+                    <img src="{{$mucua}}/conteudo/{{.Conteudo}}" alt="imagem" style="width:100%;height:auto;">
+                </article>
+                {{end}}
+                {{end}}
+                {{if .Audios}}
+                {{with index .Audios 0}}
+                <article class="card sombraG" data-categoria="hoje">
+                    <div class="cabecalhoCard corPrimaria">
+                        <p class="tituloCabecalho">Áudio</p>
+                    </div>
+                    <p class="dataCard">{{.Data}}</p>
+                    <br>
+                    <audio controls style="width:90%;margin:0 5% 10px 5%;">
+                        <source src="{{$mucua}}/conteudo/{{.Conteudo}}">
+                        Seu navegador não suporta áudio HTML5.
+                    </audio>
+                </article>
+                {{end}}
+                {{end}}
+                {{if not .Textos}}{{if not .Imagens}}{{if not .Audios}}
+                <article class="cardVazio" data-categoria="hoje">
+                    <div class="cabecalhoCard corPrimaria">
+                        <p class="tituloCabecalho">Hoje</p>
+                    </div>
+                    <p class="textoCard textoLimitado" style="padding-top:10px;">Este jornal ainda não tem nenhuma postagem.</p>
+                </article>
+                {{end}}{{end}}{{end}}
+            </section>
+
+            <!-- Textos -->
+            <section class="listaCards esconder" data-categoria="texto">
+                {{if .Textos}}
+                {{range .Textos}}
+                <article class="card sombraG" data-categoria="texto">
+                    <div class="cabecalhoCard corPrimaria">
+                        <p class="tituloCabecalho">Texto</p>
+                    </div>
+                    <p class="dataCard">{{.Data}}</p>
+                    <br>
+                    <p class="textoCard textoLimitado">{{.Conteudo}}</p>
+                </article>
+                {{end}}
+                {{else}}
+                <article class="cardVazio" data-categoria="texto">
+                    <div class="cabecalhoCard corPrimaria">
+                        <p class="tituloCabecalho">Texto</p>
+                    </div>
+                    <p class="textoCard textoLimitado" style="padding-top:10px;">Este jornal ainda não tem nenhum texto publicado.</p>
+                </article>
+                {{end}}
+            </section>
+
+            <!-- Imagens -->
+            <section class="listaCards esconder" data-categoria="imagem">
+                {{if .Imagens}}
+                {{range .Imagens}}
+                <article class="card sombraG" data-categoria="imagem">
+                    <div class="cabecalhoCard corPrimaria">
+                        <p class="tituloCabecalho">Imagem</p>
+                    </div>
+                    <p class="dataCard">{{.Data}}</p>
+                    <br>
+                    <img src="{{$mucua}}/conteudo/{{.Conteudo}}" alt="imagem" style="width:100%;height:auto;">
+                </article>
+                {{end}}
+                {{else}}
+                <article class="cardVazio" data-categoria="imagem">
+                    <div class="cabecalhoCard corPrimaria">
+                        <p class="tituloCabecalho">Imagem</p>
+                    </div>
+                    <p class="textoCard textoLimitado" style="padding-top:10px;">Este jornal ainda não tem nenhuma imagem publicada.</p>
+                </article>
+                {{end}}
+            </section>
+
+            <!-- Áudios -->
+            <section class="listaCards esconder" data-categoria="audio">
+                {{if .Audios}}
+                {{range .Audios}}
+                <article class="card sombraG" data-categoria="audio">
+                    <div class="cabecalhoCard corPrimaria">
+                        <p class="tituloCabecalho">Áudio</p>
+                    </div>
+                    <p class="dataCard">{{.Data}}</p>
+                    <br>
+                    <audio controls style="width:90%;margin:0 5% 10px 5%;">
+                        <source src="{{$mucua}}/conteudo/{{.Conteudo}}">
+                        Seu navegador não suporta áudio HTML5.
+                    </audio>
+                </article>
+                {{end}}
+                {{else}}
+                <article class="cardVazio" data-categoria="audio">
+                    <div class="cabecalhoCard corPrimaria">
+                        <p class="tituloCabecalho">Áudio</p>
+                    </div>
+                    <p class="textoCard textoLimitado" style="padding-top:10px;">Este jornal ainda não tem nenhum áudio publicado.</p>
+                </article>
+                {{end}}
+            </section>
+        </div>
+
+        {{if .Logado}}
+        <div class="botoes">
+            <button onclick="window.location.href='{{.NomeMucua}}/postagem'"
+                class="corPrimaria botaoPrimario tituloBotao">
+                adicionar conteúdo
+            </button>
+        </div>
+        {{end}}
+    </div>
+
+    <script>
+        function selecionarAba(el) {
+            document.querySelectorAll('.categoria').forEach(function(c) {
+                c.className = 'categoria';
+            });
+            el.className = 'categoria categoriaSelecionada';
+            var id = el.id;
+            document.querySelectorAll('.listaCards').forEach(function(s) {
+                if (s.getAttribute('data-categoria') === id) {
+                    s.classList.remove('esconder');
+                } else {
+                    s.classList.add('esconder');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

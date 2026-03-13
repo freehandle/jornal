@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jornal - Nova postagem</title>
+    <link rel="stylesheet" href="{{.Cabecalho.NomeMucua}}/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body class="corTerciaria">
+    <header>
+        <div class="masthead">
+            <h1 class="titulo-jornal">Jornal de {{.Cabecalho.Arroba}}</h1>
+        </div>
+        <hr class="linha-separadora">
+    </header>
+
+    <div class="conteudo">
+        <div class="postagem">
+            <form class="formulario" method="post"
+                action="{{.Cabecalho.NomeMucua}}/publica"
+                enctype="multipart/form-data">
+
+                <div id="card-1" class="cardInput sombraG">
+                    <div class="cabecalhoCard corPrimaria">
+                        <p class="tituloCabecalho">Nova postagem</p>
+                    </div>
+                    <p class="textoCard">Selecione o tipo de conteúdo</p>
+                    <br>
+                    <select id="tipoConteudo" class="textoCard cinzaClaro"
+                        name="tipoConteudo" onchange="atualizarFormulario(this.value)">
+                        {{if .PodeTexto}}
+                        <option value="texto">Texto</option>
+                        {{end}}
+                        {{if .PodeImagem}}
+                        <option value="imagem">Imagem</option>
+                        {{end}}
+                        {{if .PodeAudio}}
+                        <option value="audio">Áudio</option>
+                        {{end}}
+                        {{if not .PodeTexto}}{{if not .PodeImagem}}{{if not .PodeAudio}}
+                        <option value="" disabled selected>Nenhuma categoria disponível hoje</option>
+                        {{end}}{{end}}{{end}}
+                    </select>
+                    <br><br>
+
+                    <div id="campoTexto" class="esconder">
+                        <p class="textoCard">Texto (máx. 5000 caracteres)</p>
+                        <br>
+                        <textarea id="textoConteudo" name="textoConteudo"
+                            placeholder="Escreva seu texto aqui..." rows="20"></textarea>
+                    </div>
+
+                    <div id="campoArquivo" class="esconder">
+                        <p class="textoCard">Arquivo (máx. 20 MB)</p>
+                        <br>
+                        <input type="file" id="subir" name="subir" style="margin-left:5%;">
+                    </div>
+                    <br>
+                </div>
+
+                <div class="botoes">
+                    <p onclick="window.location.href='{{.Cabecalho.NomeMucua}}/jornal/{{.Cabecalho.Arroba}}'"
+                        class="cinzaClaro sombraP botaoSecundario tituloBotao">
+                        Cancelar
+                    </p>
+                    <button id="botaoPostar" type="submit"
+                        class="corPrimaria sombraP botaoPrimario tituloBotao">
+                        Publicar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function atualizarFormulario(tipo) {
+            document.getElementById('campoTexto').classList.add('esconder');
+            document.getElementById('campoArquivo').classList.add('esconder');
+            if (tipo === 'texto') {
+                document.getElementById('campoTexto').classList.remove('esconder');
+            } else if (tipo === 'imagem' || tipo === 'audio') {
+                document.getElementById('campoArquivo').classList.remove('esconder');
+            }
+        }
+        // inicializar com o primeiro tipo disponível
+        var sel = document.getElementById('tipoConteudo');
+        if (sel && sel.value) { atualizarFormulario(sel.value); }
+    </script>
+</body>
+</html>

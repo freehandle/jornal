@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jornal</title>
+    <link rel="stylesheet" href="{{.NomeMucua}}/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body class="corTerciaria">
+    <header>
+        <div class="masthead">
+            <h1 class="titulo-jornal">Jornal</h1>
+        </div>
+        <hr class="linha-separadora">
+    </header>
+    <div id="cardLogin" class="cardLogin sombraG">
+        <div class="cabecalhoCard corDestaque">
+            <p class="tituloLogin">Faça login para acessar</p>
+        </div>
+        <div class="espacamento formularioLogin">
+            {{if .Erro}}
+            <p class="msgAlerta corErro">{{.Erro}}</p>
+            {{end}}
+            <form action="{{.NomeMucua}}/catraca" method="post">
+                <label for="usuario" class="textoCard">Usuário</label>
+                <input class="textoCard" type="text" id="usuario" name="usuario" placeholder="Usuário"><br>
+                <br>
+                <label for="senha" class="textoCard">Senha</label>
+                <input class="textoCard" type="password" id="senha" name="senha" placeholder="Senha"><br>
+                <div class="botoes">
+                    <button class="cinzaClaro sombraP botaoSecundario tituloBotao" type="button"
+                        onclick="window.location.href='{{.NomeMucua}}/signin/'">
+                        Criar conta
+                    </button>
+                    <button class="sombraP botaoPrimario tituloBotao corDestaque" type="submit">
+                        Entrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jornal - Criar conta</title>
+    <link rel="stylesheet" href="{{.Cabecalho.NomeMucua}}/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body class="corTerciaria">
+    <header>
+        <div class="masthead">
+            <h1 class="titulo-jornal">Jornal</h1>
+        </div>
+        <hr class="linha-separadora">
+    </header>
+    <div id="cardLogin" class="cardLogin sombraG">
+        <div class="cabecalhoCard corDestaque">
+            <p class="tituloLogin">Criar nova conta</p>
+        </div>
+        <div class="espacamento formularioLogin">
+            <form method="post" action="{{.Cabecalho.NomeMucua}}/novousuario">
+                <input type="hidden" name="seed" value="{{.Seed}}">
+                <label for="handle" class="textoCard">Usuário (arroba)</label>
+                <input class="textoCard" type="text" id="handle" name="handle" placeholder="Seu usuário"><br>
+                <br>
+                <label for="password" class="textoCard">Senha</label>
+                <input class="textoCard" type="password" id="password" name="password" placeholder="Sua senha"><br>
+                <br>
+                <label for="email" class="textoCard">Email (opcional — para recuperação de conta)</label>
+                <input class="textoCard" type="email" id="email" name="email" placeholder="seu@email.com"><br>
+                <br>
+                <p class="textoCard" style="font-size:0.85em; color:#555;">
+                    Sem email, não é possível recuperar a senha caso ela seja perdida.
+                </p>
+                <div class="botoes">
+                    <button class="cinzaClaro sombraP botaoSecundario tituloBotao" type="button"
+                        onclick="window.location.href='{{.Cabecalho.NomeMucua}}/credenciais'">
+                        Voltar
+                    </button>
+                    <button class="sombraP botaoPrimario tituloBotao corDestaque" type="submit">
+                        Criar conta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
