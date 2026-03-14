@@ -101,13 +101,13 @@
             <section class="listaCards esconder" data-categoria="texto">
                 {{if .Textos}}
                 {{range .Textos}}
-                <article class="card sombraG" data-categoria="texto">
+                <article class="card sombraG card-compacto" data-categoria="texto" onclick="toggleCard(this)">
                     <div class="cabecalhoCard corPrimaria">
                         <p class="tituloCabecalho">Texto</p>
                     </div>
                     <p class="dataCard">{{.Data}}</p>
                     <br>
-                    <p class="textoCard textoLimitado">{{.Conteudo}}</p>
+                    <p class="textoCard">{{.Conteudo}}</p>
                 </article>
                 {{end}}
                 {{else}}
@@ -124,13 +124,13 @@
             <section class="listaCards esconder" data-categoria="imagem">
                 {{if .Imagens}}
                 {{range .Imagens}}
-                <article class="card sombraG" data-categoria="imagem">
+                <article class="card sombraG card-compacto" data-categoria="imagem" onclick="toggleCard(this)">
                     <div class="cabecalhoCard corPrimaria">
                         <p class="tituloCabecalho">Imagem</p>
                     </div>
                     <p class="dataCard">{{.Data}}</p>
                     <br>
-                    <img src="{{$mucua}}/conteudo/{{.Conteudo}}" alt="imagem" style="width:100%;height:auto;">
+                    <img src="{{$mucua}}/conteudo/{{.Conteudo}}" alt="imagem">
                 </article>
                 {{end}}
                 {{else}}
@@ -147,12 +147,13 @@
             <section class="listaCards esconder" data-categoria="audio">
                 {{if .Audios}}
                 {{range .Audios}}
-                <article class="card sombraG" data-categoria="audio">
+                <article class="card sombraG card-compacto" data-categoria="audio" onclick="toggleCard(this)">
                     <div class="cabecalhoCard corPrimaria">
                         <p class="tituloCabecalho">Áudio</p>
                     </div>
                     <p class="dataCard">{{.Data}}</p>
                     <br>
+                    <p class="icone-audio">▶ clique para ouvir</p>
                     <audio controls style="width:90%;margin:0 5% 10px 5%;">
                         <source src="{{$mucua}}/conteudo/{{.Conteudo}}">
                         Seu navegador não suporta áudio HTML5.
@@ -194,6 +195,16 @@
                     s.classList.add('esconder');
                 }
             });
+        }
+
+        function toggleCard(card) {
+            if (card.classList.contains('card-compacto')) {
+                card.classList.remove('card-compacto');
+                card.classList.add('card-expandido');
+            } else {
+                card.classList.remove('card-expandido');
+                card.classList.add('card-compacto');
+            }
         }
     </script>
 </body>

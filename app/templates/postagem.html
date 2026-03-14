@@ -47,10 +47,18 @@
                     <br><br>
 
                     <div id="campoTexto" class="esconder">
-                        <p class="textoCard">Texto (máx. 5000 caracteres)</p>
+                        <p class="textoCard">Importe um arquivo (.txt ou .md)</p>
+                        <br>
+                        <input type="file" id="arquivoTexto" name="arquivoTexto"
+                            accept=".txt,.md" style="margin-left:5%;"
+                            onchange="limparTextarea()">
+                        <p id="avisoArquivo" class="textoCard" style="display:none;color:#6B7280;font-size:0.85em;padding-top:6px;">arquivo selecionado — o conteúdo do textarea será ignorado</p>
+                        <br><br>
+                        <p class="textoCard">— ou digite diretamente (máx. 5000 caracteres) —</p>
                         <br>
                         <textarea id="textoConteudo" name="textoConteudo"
-                            placeholder="Escreva seu texto aqui..." rows="20"></textarea>
+                            placeholder="Escreva seu texto aqui..." rows="20"
+                            oninput="limparArquivoTexto()"></textarea>
                     </div>
 
                     <div id="campoArquivo" class="esconder">
@@ -83,6 +91,21 @@
                 document.getElementById('campoTexto').classList.remove('esconder');
             } else if (tipo === 'imagem' || tipo === 'audio') {
                 document.getElementById('campoArquivo').classList.remove('esconder');
+            }
+        }
+        function limparArquivoTexto() {
+            var input = document.getElementById('arquivoTexto');
+            input.value = '';
+            document.getElementById('avisoArquivo').style.display = 'none';
+        }
+        function limparTextarea() {
+            var input = document.getElementById('arquivoTexto');
+            var aviso = document.getElementById('avisoArquivo');
+            if (input.files && input.files.length > 0) {
+                document.getElementById('textoConteudo').value = '';
+                aviso.style.display = 'block';
+            } else {
+                aviso.style.display = 'none';
             }
         }
         // inicializar com o primeiro tipo disponível

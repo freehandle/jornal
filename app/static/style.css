@@ -172,7 +172,7 @@ audio {
     font-size: 0.8rem;
     color: #6B7280;
     font-style: normal;
-    font-weight: 400;
+    font-weight: 600;
     text-transform: uppercase;
     margin: 1.2rem 0 0 0;
     letter-spacing: 0.08em;
@@ -300,7 +300,10 @@ audio {
     text-overflow: ellipsis;
     color: #3A4550;
     font-family: 'IM Fell English', Georgia, serif;
+    font-size: 1.15em;
     line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 /* MODIFICADORES */
@@ -396,7 +399,7 @@ audio {
     align-items: center;
     cursor: pointer;
     padding: 8px 18px;
-    font-size: 0.9em;
+    font-size: 1em;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -545,10 +548,181 @@ audio {
     max-width: 600px;
 }
 
+/* CARDS COMPACTÁVEIS */
+
+.card-compacto,
+.card-expandido {
+    cursor: pointer;
+}
+
+.card-compacto .cabecalhoCard::after,
+.card-expandido .cabecalhoCard::after {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75em;
+    letter-spacing: 0.05em;
+    opacity: 0.75;
+    margin-left: auto;
+}
+
+.card-compacto .cabecalhoCard::after {
+    content: '▼ expandir';
+}
+
+.card-expandido .cabecalhoCard::after {
+    content: '▲ recolher';
+}
+
+/* Texto compacto/expandido */
+.card-compacto .textoCard {
+    max-height: calc(1.6em * 3) !important;
+    overflow: hidden !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    line-clamp: 3 !important;
+}
+
+.card-expandido .textoCard {
+    max-height: none !important;
+    overflow: visible !important;
+    display: block !important;
+    -webkit-line-clamp: unset !important;
+    line-clamp: unset !important;
+}
+
+/* Imagem compacta/expandida */
+.card-compacto img {
+    max-height: 120px;
+    width: 100%;
+    object-fit: cover;
+    object-position: top;
+}
+
+.card-expandido img {
+    max-height: none;
+    height: auto;
+    width: 100%;
+    object-fit: unset;
+}
+
+/* Áudio compacto/expandido */
+.icone-audio {
+    display: none;
+}
+
+.card-compacto .icone-audio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 5% 12px 5%;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9em;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6B7280;
+}
+
+.card-compacto audio {
+    display: none;
+}
+
+.card-expandido .icone-audio {
+    display: none;
+}
+
+.card-expandido audio {
+    display: block;
+}
+
 /* ----- Ids ----- */
 
 #textoSair {
     font-size: 0.9em;
     font-family: 'Barlow Condensed', sans-serif;
     letter-spacing: 0.05em;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+/* Tablet (≤ 768px) */
+@media (max-width: 768px) {
+    .cardLogin {
+        width: 90%;
+        margin: 5% auto;
+    }
+
+    .categoria,
+    .categoriaSelecionada {
+        padding: 8px 14px;
+        min-width: 60px;
+    }
+}
+
+/* Mobile (≤ 480px) */
+@media (max-width: 480px) {
+    body {
+        margin-left: 3%;
+        margin-right: 3%;
+        font-size: 0.95rem;
+    }
+
+    /* Impede zoom automático em iOS ao focar inputs */
+    input,
+    textarea,
+    select {
+        font-size: 1rem;
+    }
+
+    /* Abas com scroll horizontal quando não cabem na tela */
+    .categorias {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        flex-wrap: nowrap;
+    }
+
+    .categorias::-webkit-scrollbar {
+        display: none;
+    }
+
+    .categoria,
+    .categoriaSelecionada {
+        padding: 8px 10px;
+        min-width: 52px;
+        font-size: 0.8em;
+        flex-shrink: 0;
+    }
+
+    /* Card de login mais largo */
+    .cardLogin {
+        width: 96%;
+        margin: 3% auto;
+    }
+
+    /* Área do masthead mais compacta */
+    .masthead {
+        padding: 0.5rem 0 0.4rem 0;
+    }
+
+    .data-edicao {
+        margin-top: 0.6rem;
+        font-size: 0.72rem;
+    }
+
+    /* Cabeçalho do card com indicador menor */
+    .card-compacto .cabecalhoCard::after,
+    .card-expandido .cabecalhoCard::after {
+        font-size: 0.65em;
+    }
+
+    /* Botões com área de toque confortável */
+    button,
+    .fakebutton {
+        min-height: 44px;
+    }
+
+    .botaoPrimario,
+    .botaoSecundario {
+        padding: 10px 20px;
+    }
 }

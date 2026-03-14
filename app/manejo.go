@@ -247,6 +247,23 @@ func (a *Aplicacao) ManejoPublica(w http.ResponseWriter, r *http.Request) {
 	switch tipo {
 	case "texto":
 		conteudo := r.FormValue("textoConteudo")
+		// Se um arquivo .txt ou .md foi enviado, usa o conteúdo do arquivo
+		arquivoTexto, cabecalhoTexto, errArq := r.FormFile("arquivoTexto")
+		if errArq == nil {
+			ext := strings.ToLower(filepath.Ext(cabecalhoTexto.Filename))
+			if ext == ".txt" || ext == ".md" {
+				bytesTexto, errLer := io.ReadAll(arquivoTexto)
+				if errLer != nil {
+					http.Error(w, "Erro ao ler arquivo de texto", http.StatusBadRequest)
+					return
+				}
+				conteudo = string(bytesTexto)
+			}
+		}
+		if len([]rune(conteudo)) > 5000 {
+			http.Error(w, "texto excede o limite de 5000 caracteres", http.StatusBadRequest)
+			return
+		}
 		acao := &acoes.PostarTexto{
 			Epoca:    a.Epoca,
 			Autor:    token,
