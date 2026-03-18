@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -44,10 +45,28 @@ type PaginaJornal struct {
 	NomeMucua string
 	Arroba    string
 	Logado    bool
+	EhDono    bool
+	OptIn     bool
 	DataAtual string
 	Textos    []ItemPost
 	Imagens   []ItemPost
 	Audios    []ItemPost
+}
+
+type ItemLanding struct {
+	Arroba          string
+	UltimaData      string
+	TiposPublicados string
+	ultimaEpoca     uint64
+}
+
+type PaginaLanding struct {
+	NomeMucua    string
+	DataAtual    string
+	Jornais      []ItemLanding
+	Logado       bool
+	ArrobaLogado string
+	OptIn        bool
 }
 
 func dataFormatada(a *Aplicacao, epoca uint64) string {
@@ -164,10 +183,14 @@ func (a *Aplicacao) ManejoJornal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	tokenLogado := crypto.TokenFromString(strToken)
+	_, optado := a.OptIn[arroba]
 	pagina := PaginaJornal{
 		NomeMucua: a.NomeMucua,
 		Arroba:    arroba,
 		Logado:    strToken != "",
+		EhDono:    strToken != "" && a.Indice.TokenParaArroba[tokenLogado] == arroba,
+		OptIn:     optado,
 		DataAtual: dataHoje(),
 	}
 	for i := len(jornal.Textos) - 1; i >= 0; i-- {
@@ -350,4 +373,105 @@ func (a *Aplicacao) ManejoConteudo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(bytes)
+}
+
+// ManejoInicio exibe a landing page com jornais atualizados nas últimas 24h
+func (a *Aplicacao) ManejoInicio(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" && r.URL.Path != "" {
+		http.NotFound(w, r)
+		return
+	}
+	strToken := a.Autor(r)
+	var arrobaLogado string
+	if strToken != "" {
+		tokenLogado := crypto.TokenFromString(strToken)
+		arrobaLogado = a.Indice.TokenParaArroba[tokenLogado]
+	}
+	_, optadoLogado := a.OptIn[arrobaLogado]
+
+	var jornais []ItemLanding
+	for arroba := range a.OptIn {
+		jornal := a.Indice.ArrobaParaJornal[arroba]
+		if jornal == nil {
+			continue
+		}
+		var ultimaEpoca uint64
+		var tipos []string
+
+		if len(jornal.Textos) > 0 {
+			e := jornal.Textos[len(jornal.Textos)-1].Data
+			if a.Epoca >= e && a.Epoca-e < estado.LapsoDia {
+				tipos = append(tipos, "Texto")
+				if e > ultimaEpoca {
+					ultimaEpoca = e
+				}
+			}
+		}
+		if len(jornal.Imagens) > 0 {
+			e := jornal.Imagens[len(jornal.Imagens)-1].Data
+			if a.Epoca >= e && a.Epoca-e < estado.LapsoDia {
+				tipos = append(tipos, "Imagem")
+				if e > ultimaEpoca {
+					ultimaEpoca = e
+				}
+			}
+		}
+		if len(jornal.Audios) > 0 {
+			e := jornal.Audios[len(jornal.Audios)-1].Data
+			if a.Epoca >= e && a.Epoca-e < estado.LapsoDia {
+				tipos = append(tipos, "Áudio")
+				if e > ultimaEpoca {
+					ultimaEpoca = e
+				}
+			}
+		}
+		if len(tipos) == 0 {
+			continue
+		}
+		jornais = append(jornais, ItemLanding{
+			Arroba:          arroba,
+			UltimaData:      dataFormatada(a, ultimaEpoca),
+			TiposPublicados: strings.Join(tipos, " · "),
+			ultimaEpoca:     ultimaEpoca,
+		})
+	}
+	sort.Slice(jornais, func(i, j int) bool {
+		return jornais[i].ultimaEpoca > jornais[j].ultimaEpoca
+	})
+
+	pagina := PaginaLanding{
+		NomeMucua:    a.NomeMucua,
+		DataAtual:    dataHoje(),
+		Jornais:      jornais,
+		Logado:       strToken != "",
+		ArrobaLogado: arrobaLogado,
+		OptIn:        optadoLogado,
+	}
+	if err := a.templates.ExecuteTemplate(w, "landing.html", pagina); err != nil {
+		log.Println(err)
+	}
+}
+
+// ManejoOptIn alterna a participação do jornal do usuário na landing page
+func (a *Aplicacao) ManejoOptIn(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
+		return
+	}
+	strToken := a.Autor(r)
+	token := crypto.TokenFromString(strToken)
+	arroba, ok := a.Indice.TokenParaArroba[token]
+	if strToken == "" || !ok {
+		http.Redirect(w, r, fmt.Sprintf("%s/credenciais", a.NomeMucua), http.StatusSeeOther)
+		return
+	}
+	if _, opted := a.OptIn[arroba]; opted {
+		delete(a.OptIn, arroba)
+	} else {
+		a.OptIn[arroba] = struct{}{}
+	}
+	if a.CaminhoOptIn != "" {
+		SalvarOptIn(a.CaminhoOptIn, a.OptIn)
+	}
+	http.Redirect(w, r, fmt.Sprintf("%s/jornal/%s", a.NomeMucua, arroba), http.StatusSeeOther)
 }

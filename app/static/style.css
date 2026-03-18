@@ -634,6 +634,26 @@ audio {
     display: block;
 }
 
+/* LANDING PAGE */
+
+.landing-card {
+    transition: box-shadow 0.1s;
+}
+
+.landing-card:hover {
+    box-shadow: 8px 8px 0 0 #6B7280;
+}
+
+.landing-tipos {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75em;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #C8BBAA;
+    margin-left: auto;
+}
+
 /* ----- Ids ----- */
 
 #textoSair {

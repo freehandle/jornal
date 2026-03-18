@@ -57,6 +57,8 @@ func main() {
 	aplicacao.Gateway = app.PorteiraDeCanal(sender, pk)
 	aplicacao.NomeMucua = ""
 	aplicacao.CaminhoArquivos = "/home/lienko/setembro/arquivosjornal/"
+	aplicacao.CaminhoOptIn = "./optin.dat"
+	aplicacao.OptIn = app.CarregarOptIn("./optin.dat")
 
 	if senhaEmail == "" {
 		aplicacao.Gerente, err = app.ContrataGerente(aplicacao, ".", "", "", pk)

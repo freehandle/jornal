@@ -173,6 +173,13 @@
 
         {{if .Logado}}
         <div class="botoes">
+            {{if .EhDono}}
+            <form method="post" action="{{.NomeMucua}}/optin" style="margin:0;">
+                <button type="submit" class="botaoSecundario tituloBotao">
+                    {{if .OptIn}}sair da página inicial{{else}}entrar na página inicial{{end}}
+                </button>
+            </form>
+            {{end}}
             <button onclick="window.location.href='{{.NomeMucua}}/postagem'"
                 class="corPrimaria botaoPrimario tituloBotao">
                 adicionar conteúdo

@@ -19,7 +19,7 @@ import (
 const appName = "JORNAL"
 
 var arquivosTemplate = []string{
-	"credenciais", "signin", "jornal", "postagem",
+	"credenciais", "signin", "jornal", "postagem", "landing",
 }
 
 type Aplicacao struct {
@@ -37,6 +37,8 @@ type Aplicacao struct {
 	Convidar        map[crypto.Hash]struct{}
 	Gerente         *auth.SigninManager
 	CaminhoArquivos string
+	OptIn           map[string]struct{}
+	CaminhoOptIn    string
 }
 
 func (p *Aplicacao) DataDaEpoca(epoca uint64) time.Time {
@@ -116,6 +118,7 @@ func NovaAplicacaoVazia() *Aplicacao {
 	}
 	return &Aplicacao{
 		Convidar:    make(map[crypto.Hash]struct{}),
+		OptIn:       make(map[string]struct{}),
 		templates:   t,
 		GenesisTime: time.Now(),
 	}

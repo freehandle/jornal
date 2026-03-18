@@ -15,6 +15,7 @@ func NovaMucua(ctx context.Context, app *Aplicacao, port int, caminho string) {
 	staticPath := fmt.Sprintf("%s/static/", caminho)
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(staticPath))))
 
+	mux.HandleFunc("/", app.ManejoInicio)
 	mux.HandleFunc("/signin/", app.ManejoSignin)
 	mux.HandleFunc("/novousuario", app.ManejoNovoUsuario)
 	mux.HandleFunc("/credenciais", app.ManejoCredenciais)
@@ -24,6 +25,7 @@ func NovaMucua(ctx context.Context, app *Aplicacao, port int, caminho string) {
 	mux.HandleFunc("/publica", app.ManejoPublica)
 	mux.HandleFunc("/sair", app.ManejoSair)
 	mux.HandleFunc("/conteudo/", app.ManejoConteudo)
+	mux.HandleFunc("/optin", app.ManejoOptIn)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),

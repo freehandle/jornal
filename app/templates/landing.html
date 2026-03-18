@@ -1,0 +1,64 @@
+{{$mucua := .NomeMucua}}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jornais — Edição de Hoje</title>
+    <link rel="stylesheet" href="{{.NomeMucua}}/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body class="corTerciaria">
+    <header>
+        <div class="masthead">
+            <a href="{{.NomeMucua}}/">
+                <h1 class="titulo-jornal">Jornais</h1>
+            </a>
+            <p class="data-edicao">{{.DataAtual}}</p>
+        </div>
+        <hr class="linha-separadora">
+        <div class="barra-topo">
+            {{if .Logado}}
+            <a class="fakebutton botaoSecundario tituloBotao" href="{{.NomeMucua}}/jornal/{{.ArrobaLogado}}">
+                meu jornal
+            </a>
+            <a class="fakebutton botaoSecundario tituloBotao" href="{{.NomeMucua}}/sair">
+                sair
+            </a>
+            {{else}}
+            <a class="fakebutton botaoSecundario tituloBotao" href="{{.NomeMucua}}/credenciais">
+                entrar
+            </a>
+            {{end}}
+        </div>
+    </header>
+
+    <div class="postagens">
+        <div class="listaCards">
+            {{if .Jornais}}
+            {{range .Jornais}}
+            <a href="{{$mucua}}/jornal/{{.Arroba}}" style="width:100%;">
+                <article class="card sombraG landing-card">
+                    <div class="cabecalhoCard corPrimaria">
+                        <p class="tituloCabecalho">@{{.Arroba}}</p>
+                        <p class="landing-tipos">{{.TiposPublicados}}</p>
+                    </div>
+                    <p class="dataCard" style="padding-top:10px;">{{.UltimaData}}</p>
+                    <br>
+                </article>
+            </a>
+            {{end}}
+            {{else}}
+            <article class="cardVazio">
+                <div class="cabecalhoCard corPrimaria">
+                    <p class="tituloCabecalho">Edição de hoje</p>
+                </div>
+                <p class="textoCard" style="padding-top:10px;">Nenhum jornal foi atualizado nas últimas 24 horas.</p>
+            </article>
+            {{end}}
+        </div>
+    </div>
+</body>
+</html>
