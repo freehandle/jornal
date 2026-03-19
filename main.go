@@ -99,8 +99,8 @@ func main() {
 	aplicacao.GenesisTime = time.Date(2025, time.September, 14, 15, 10, 10, 0, time.UTC)
 	aplicacao.Intervalo = time.Second
 	aplicacao.Gateway = app.PorteiraDeCanal(sender, pk)
-	aplicacao.NomeMucua = ""
-	aplicacao.CaminhoArquivos = "/home/lienko/setembro/arquivosjornal/"
+	aplicacao.NomeMucua = "/jornal"
+	aplicacao.CaminhoArquivos = "/home/lari/conteudojornal/"
 	aplicacao.CaminhoOptIn = "./optin.dat"
 	aplicacao.OptIn = app.CarregarOptIn("./optin.dat")
 
@@ -114,6 +114,6 @@ func main() {
 	}
 
 	fim := make(chan error, 1)
-	app.NovaMucua(ctx, aplicacao, 8080, "./app")
+	app.NovaMucua(ctx, aplicacao, 8030, "./app")
 	err = <-fim
 }
