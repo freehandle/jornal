@@ -15,6 +15,7 @@ type PostarAudio struct {
 	TipoArquivo string // extensão: .mp3, .wav, .ogg, .flac, .m4a
 	Conteudo    crypto.Hash
 	Data        time.Time
+	Nome        string // nome original do arquivo (opcional)
 }
 
 func (p *PostarAudio) ValidarFormato() bool {
@@ -37,6 +38,7 @@ func (p *PostarAudio) Serializa() []byte {
 	util.PutString(p.TipoArquivo, &bytes)
 	util.PutHash(p.Conteudo, &bytes)
 	util.PutTime(p.Data, &bytes)
+	util.PutString(p.Nome, &bytes)
 	return bytes
 }
 
@@ -52,6 +54,10 @@ func LeAudio(dados []byte) *PostarAudio {
 	acao.TipoArquivo, pos = util.ParseString(dados, pos)
 	acao.Conteudo, pos = util.ParseHash(dados, pos)
 	acao.Data, pos = util.ParseTime(dados, pos)
+	if pos < len(dados) {
+		// campo Nome opcional: presente em postagens novas, ausente em antigas
+		acao.Nome, pos = util.ParseString(dados, pos)
+	}
 	if pos != len(dados) {
 		return nil
 	}

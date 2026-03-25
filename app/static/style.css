@@ -605,6 +605,28 @@ audio {
     object-fit: unset;
 }
 
+/* Metadados de áudio */
+.metadadosAudio {
+    padding: 6px 5% 0 5%;
+}
+
+.nomeAudio {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.1em;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: #3A4550;
+    margin: 0;
+}
+
+.autoriaAudio {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9em;
+    letter-spacing: 0.05em;
+    color: #6B7280;
+    margin: 2px 0 8px 0;
+}
+
 /* Áudio compacto/expandido */
 .icone-audio {
     display: none;

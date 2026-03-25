@@ -79,7 +79,10 @@
                         <p class="tituloCabecalho">Áudio</p>
                     </div>
                     <p class="dataCard">{{.Data}}</p>
-                    <br>
+                    <div class="metadadosAudio">
+                        {{if .Nome}}<p class="nomeAudio">{{.Nome}}</p>{{end}}
+                        <p class="autoriaAudio">@{{.Autoria}}</p>
+                    </div>
                     <audio controls style="width:90%;margin:0 5% 10px 5%;">
                         <source src="{{$mucua}}/conteudo/{{.Conteudo}}">
                         Seu navegador não suporta áudio HTML5.
@@ -152,7 +155,10 @@
                         <p class="tituloCabecalho">Áudio</p>
                     </div>
                     <p class="dataCard">{{.Data}}</p>
-                    <br>
+                    <div class="metadadosAudio">
+                        {{if .Nome}}<p class="nomeAudio">{{.Nome}}</p>{{end}}
+                        <p class="autoriaAudio">@{{.Autoria}}</p>
+                    </div>
                     <p class="icone-audio">▶ clique para ouvir</p>
                     <audio controls style="width:90%;margin:0 5% 10px 5%;">
                         <source src="{{$mucua}}/conteudo/{{.Conteudo}}">

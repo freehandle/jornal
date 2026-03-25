@@ -20,6 +20,7 @@ type HashData struct {
 	Hash crypto.Hash
 	Data uint64
 	Tipo string
+	Nome string // nome original do arquivo (vazio em postagens antigas)
 }
 
 func NovoIndice() *Indice {
@@ -80,6 +81,7 @@ func (i *Indice) IncorporaAcao(dados []byte) {
 				Hash: acao.Conteudo,
 				Data: acao.Epoca,
 				Tipo: acao.TipoArquivo,
+				Nome: acao.Nome,
 			})
 		}
 	}

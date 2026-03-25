@@ -39,6 +39,8 @@ type ItemPost struct {
 	Conteudo  string // texto ou "hash.extensão" para arquivos
 	TipoTexto bool
 	TipoHash  bool
+	Nome      string // nome original do arquivo (áudio)
+	Autoria   string // @arroba do autor (áudio)
 }
 
 type PaginaJornal struct {
@@ -215,6 +217,8 @@ func (a *Aplicacao) ManejoJornal(w http.ResponseWriter, r *http.Request) {
 			Data:     dataFormatada(a, aud.Data),
 			Conteudo: fmt.Sprintf("%s%s", aud.Hash.String(), aud.Tipo),
 			TipoHash: true,
+			Nome:     aud.Nome,
+			Autoria:  arroba,
 		})
 	}
 
@@ -315,6 +319,7 @@ func (a *Aplicacao) ManejoPublica(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		extensao := filepath.Ext(cabecalho.Filename)
+		nomeOriginal := strings.TrimSuffix(cabecalho.Filename, extensao)
 		hash := crypto.Hasher(bytes)
 		nomearquivo := fmt.Sprintf("%s%s", hash.String(), extensao)
 		caminho := filepath.Join(a.CaminhoArquivos, nomearquivo)
@@ -342,6 +347,7 @@ func (a *Aplicacao) ManejoPublica(w http.ResponseWriter, r *http.Request) {
 				TipoArquivo: extensao,
 				Conteudo:    hash,
 				Data:        time.Now(),
+				Nome:        nomeOriginal,
 			}
 			if !acao.ValidarFormato() {
 				http.Error(w, "tipo de áudio inválido (use mp3, wav, ogg, flac, m4a)", http.StatusBadRequest)
