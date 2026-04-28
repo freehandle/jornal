@@ -105,12 +105,12 @@ func main() {
 	aplicacao.Indice = indice.NovoIndice()
 	aplicacao.GenesisTime = time.Date(2025, time.September, 14, 15, 10, 10, 0, time.UTC)
 	aplicacao.Intervalo = time.Second
-	aplicacao.Gateway = app.PorteiraDeCanal(sender, pk)
 	//aplicacao.NomeMucua = "/jornal"
 	aplicacao.CaminhoArquivos = "/home/lari/conteudojornal/"
 	aplicacao.CaminhoOptIn = "./optin.dat"
 	aplicacao.OptIn = app.CarregarOptIn("./optin.dat")
-
+	aplicacao.Gateway = app.PorteiraDeCanal(sender, pk, nil)
+	// TODO: Gateway e Gerente estão em referencia cirucular pq o gateway precisa da epoca e a novidade vem do gerente. Refatorar para quebrar essa circularidade.
 	if senhaEmail == "" {
 		aplicacao.Gerente, err = app.ContrataGerente(aplicacao, ".", "", "", pk)
 	} else {
@@ -119,7 +119,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	fim := make(chan error, 1)
 	app.NovaMucua(ctx, aplicacao, 8030, "./app")
 	err = <-fim

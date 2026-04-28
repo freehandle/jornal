@@ -195,6 +195,7 @@ func (a *Aplicacao) ManejoJornal(w http.ResponseWriter, r *http.Request) {
 		OptIn:     optado,
 		DataAtual: dataHoje(),
 	}
+	fmt.Println(pagina)
 	for i := len(jornal.Textos) - 1; i >= 0; i-- {
 		t := jornal.Textos[i]
 		pagina.Textos = append(pagina.Textos, ItemPost{

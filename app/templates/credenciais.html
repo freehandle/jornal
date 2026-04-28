@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jornal</title>
-    <link rel="stylesheet" href="{{.NomeMucua}}/static/style.css">
+    <link rel="stylesheet" href="{{.Hostname}}/static/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
@@ -21,10 +21,10 @@
             <p class="tituloLogin">Faça login para acessar</p>
         </div>
         <div class="espacamento formularioLogin">
-            {{if .Erro}}
-            <p class="msgAlerta corErro">{{.Erro}}</p>
+            {{if .Error}}
+            <p class="msgAlerta corErro">{{.Error}}</p>
             {{end}}
-            <form action="{{.NomeMucua}}/catraca" method="post">
+            <form action="{{.Hostname}}/catraca" method="post">
                 <label for="usuario" class="textoCard">Usuário</label>
                 <input class="textoCard" type="text" id="usuario" name="usuario" placeholder="Usuário"><br>
                 <br>
@@ -32,7 +32,7 @@
                 <input class="textoCard" type="password" id="senha" name="senha" placeholder="Senha"><br>
                 <div class="botoes">
                     <button class="cinzaClaro sombraP botaoSecundario tituloBotao" type="button"
-                        onclick="window.location.href='{{.NomeMucua}}/signin/'">
+                        onclick="window.location.href='{{.Hostname}}/signin/'">
                         Criar conta
                     </button>
                     <button class="sombraP botaoPrimario tituloBotao corDestaque" type="submit">

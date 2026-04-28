@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/freehandle/breeze/crypto"
@@ -33,11 +34,11 @@ func ContrataGerente(app *Aplicacao, path, senhaGmail, usuarioGmail string, cred
 		gmail = &auth.SMTPGmail{Password: senhaGmail, From: usuarioGmail}
 	}
 
-	carteiro := &auth.SMTPManager{
-		Mail:      gmail,
-		Token:     credenciais.PublicKey(),
-		Templates: mensagens,
-	}
+	// carteiro := &auth.SMTPManager{
+	// 	Mail:      gmail,
+	// 	Token:     credenciais.PublicKey(),
+	// 	Templates: mensagens,
+	// }
 
 	arqCookies := fmt.Sprintf("%s/cookies.dat", path)
 	doceria, err := auth.OpenCokieStore(arqCookies)
@@ -45,18 +46,33 @@ func ContrataGerente(app *Aplicacao, path, senhaGmail, usuarioGmail string, cred
 		return nil, err
 	}
 
-	gerente := &auth.SigninManager{
-		AppName:        appName,
-		Passwords:      senhas,
-		Cookies:        doceria,
-		Mail:           carteiro,
-		Granted:        make(map[string]crypto.Token),
-		Credentials:    credenciais,
-		Members:        app,
-		SafeAddress:    "http://localhost:8089",
-		SafeAPIAddress: "http://localhost:8090",
-		HandleToToken:  make(map[string]crypto.Token),
-		TokenToHandle:  make(map[crypto.Token]string),
+	cfg := auth.ManagerConfig{
+		Token:     credenciais.PublicKey(),
+		Passwords: senhas,
+		Mail:      gmail,
+		Templates: mensagens,
+		Source:    app.Novidades,
 	}
+
+	gerente, _ := auth.LaunchManager(context.Background(), cfg, app.Novidades)
+	gerente.Cookies = doceria
+	gerente.Members = app
+	gerente.SafeAPIAddress = "http://localhost:8090"
+	gerente.SafeAddress = "http://localhost:8089"
+	gerente.Credentials = credenciais
+
+	// gerente := &auth.SigninManager{
+	// 	AppName:        appName,
+	// 	Passwords:      senhas,
+	// 	Cookies:        doceria,
+	// 	Mail:           carteiro,
+	// 	Granted:        make(map[string]crypto.Token),
+	// 	Credentials:    credenciais,
+	// 	Members:        app,
+	// 	SafeAddress:    "http://localhost:8089",
+	// 	SafeAPIAddress: "http://localhost:8090",
+	// 	HandleToToken:  make(map[string]crypto.Token),
+	// 	TokenToHandle:  make(map[crypto.Token]string),
+	// }
 	return gerente, nil
 }

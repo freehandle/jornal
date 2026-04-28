@@ -8,38 +8,51 @@ import (
 	"github.com/freehandle/breeze/socket"
 	"github.com/freehandle/breeze/util"
 	"github.com/freehandle/handles/attorney"
+	"github.com/freehandle/iu/auth"
 	"github.com/freehandle/jornal/protocolo/acoes"
 )
 
 // tail de assinatura que o Breeze acrescenta à ação: 2 assinaturas + 2 tokens + 1 uint64
 const finalBreeze = 2*crypto.SignatureSize + 2*crypto.TokenSize + 8
 
-type PorteiraLocal chan []byte
+type PorteiraLocal struct {
+	canal   chan []byte
+	gerente *auth.SigninManager
+}
 
 type PorteiraRemota struct {
 	Conexao *socket.SignedConnection
+	gerente *auth.SigninManager
 }
 
-func (p *PorteiraRemota) Send(data []byte) error {
+func (p *PorteiraRemota) Send(data []byte) {
 	data = append([]byte{0}, data...)
-	return p.Conexao.Send(data)
+	p.Conexao.Send(data)
 }
 
-func PorteiraInternet(conexao *socket.SignedConnection, credenciais crypto.PrivateKey) *Porteira {
-	return &Porteira{portao: &PorteiraRemota{Conexao: conexao}, credenciais: credenciais}
+func (p *PorteiraRemota) Epoch() uint64 {
+	return p.gerente.Epoch
 }
 
-func (p PorteiraLocal) Send(data []byte) error {
-	p <- data
-	return nil
+func PorteiraInternet(conexao *socket.SignedConnection, credenciais crypto.PrivateKey, gerente *auth.SigninManager) *Porteira {
+	return &Porteira{portao: &PorteiraRemota{Conexao: conexao, gerente: gerente}, credenciais: credenciais}
+}
+
+func (p *PorteiraLocal) Send(data []byte) {
+	p.canal <- data
+}
+
+func (p *PorteiraLocal) Epoch() uint64 {
+	return p.gerente.Epoch
 }
 
 type Portao interface {
-	Send([]byte) error
+	Send([]byte)
+	Epoch() uint64
 }
 
-func PorteiraDeCanal(canal chan []byte, credenciais crypto.PrivateKey) *Porteira {
-	return &Porteira{portao: PorteiraLocal(canal), credenciais: credenciais}
+func PorteiraDeCanal(canal chan []byte, credenciais crypto.PrivateKey, gerente *auth.SigninManager) *Porteira {
+	return &Porteira{portao: &PorteiraLocal{canal: canal, gerente: gerente}, credenciais: credenciais}
 }
 
 type Porteira struct {
@@ -54,8 +67,8 @@ func BreezeParaJornal(action []byte) []byte {
 		return nil
 	}
 	bytes := make([]byte, 8+len(action)-finalBreeze-15)
-	copy(bytes[0:8], action[2:10])                         // época
-	copy(bytes[8:], action[15:len(action)-finalBreeze])    // conteúdo sem cabeçalho e sem tail
+	copy(bytes[0:8], action[2:10])                      // época
+	copy(bytes[8:], action[15:len(action)-finalBreeze]) // conteúdo sem cabeçalho e sem tail
 	return bytes
 }
 
