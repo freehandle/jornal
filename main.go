@@ -109,8 +109,7 @@ func main() {
 	aplicacao.CaminhoArquivos = "/home/lari/conteudojornal/"
 	aplicacao.CaminhoOptIn = "./optin.dat"
 	aplicacao.OptIn = app.CarregarOptIn("./optin.dat")
-	aplicacao.Gateway = app.PorteiraDeCanal(sender, pk, nil)
-	// TODO: Gateway e Gerente estão em referencia cirucular pq o gateway precisa da epoca e a novidade vem do gerente. Refatorar para quebrar essa circularidade.
+	aplicacao.Gateway = app.PorteiraDeCanal(sender, pk)
 	if senhaEmail == "" {
 		aplicacao.Gerente, err = app.ContrataGerente(aplicacao, ".", "", "", pk)
 	} else {

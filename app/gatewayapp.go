@@ -16,13 +16,11 @@ import (
 const finalBreeze = 2*crypto.SignatureSize + 2*crypto.TokenSize + 8
 
 type PorteiraLocal struct {
-	canal   chan []byte
-	gerente *auth.SigninManager
+	canal chan []byte
 }
 
 type PorteiraRemota struct {
 	Conexao *socket.SignedConnection
-	gerente *auth.SigninManager
 }
 
 func (p *PorteiraRemota) Send(data []byte) {
@@ -30,29 +28,20 @@ func (p *PorteiraRemota) Send(data []byte) {
 	p.Conexao.Send(data)
 }
 
-func (p *PorteiraRemota) Epoch() uint64 {
-	return p.gerente.Epoch
-}
-
 func PorteiraInternet(conexao *socket.SignedConnection, credenciais crypto.PrivateKey, gerente *auth.SigninManager) *Porteira {
-	return &Porteira{portao: &PorteiraRemota{Conexao: conexao, gerente: gerente}, credenciais: credenciais}
+	return &Porteira{portao: &PorteiraRemota{Conexao: conexao}, credenciais: credenciais}
 }
 
 func (p *PorteiraLocal) Send(data []byte) {
 	p.canal <- data
 }
 
-func (p *PorteiraLocal) Epoch() uint64 {
-	return p.gerente.Epoch
-}
-
 type Portao interface {
 	Send([]byte)
-	Epoch() uint64
 }
 
-func PorteiraDeCanal(canal chan []byte, credenciais crypto.PrivateKey, gerente *auth.SigninManager) *Porteira {
-	return &Porteira{portao: &PorteiraLocal{canal: canal, gerente: gerente}, credenciais: credenciais}
+func PorteiraDeCanal(canal chan []byte, credenciais crypto.PrivateKey) *Porteira {
+	return &Porteira{portao: &PorteiraLocal{canal: canal}, credenciais: credenciais}
 }
 
 type Porteira struct {
