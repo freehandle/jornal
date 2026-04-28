@@ -12,6 +12,7 @@ import (
 
 	"github.com/freehandle/breeze/crypto"
 	"github.com/freehandle/breeze/middleware/simple"
+	"github.com/freehandle/iu/dev"
 	"github.com/freehandle/jornal/app"
 	"github.com/freehandle/jornal/indice"
 	"github.com/freehandle/jornal/protocolo/estado"
@@ -43,8 +44,8 @@ func carregarOuCriarChave(caminho string) crypto.PrivateKey {
 		PrivateKey []byte
 	}
 	pkcs8Key := pkcs8{
-		Version: 0,
-		Algo:    pkix.AlgorithmIdentifier{Algorithm: oidKeyEd25519},
+		Version:    0,
+		Algo:       pkix.AlgorithmIdentifier{Algorithm: oidKeyEd25519},
 		PrivateKey: seedASN1,
 	}
 	der, err := asn1.Marshal(pkcs8Key)
@@ -62,7 +63,8 @@ func carregarOuCriarChave(caminho string) crypto.PrivateKey {
 func main() {
 	// lê variáveis de ambiente opcionais
 	var senhaEmail string
-	caminhoBlocos := "/home/lienko/setembro/handles/cmd/proxy-handles"
+	//caminhoBlocos := "/home/lienko/setembro/handles/cmd/proxy-handles"
+	caminhoBlocos := "."
 
 	for _, env := range os.Environ() {
 		if strings.HasPrefix(env, "SENHA_EMAIL=") {
@@ -82,6 +84,11 @@ func main() {
 
 	aplicacao := app.NovaAplicacaoVazia()
 
+	_, err := dev.Start(ctx, caminhoBlocos)
+	if err != nil {
+		log.Fatalf("erro ao iniciar stack de desenvolvimento: %v", err)
+	}
+
 	// fonte de ações: lê blocos do proxy de handles e extrai ações individuais
 	novidades := simple.DissociateActions(ctx, simple.NewBlockReader(ctx, caminhoBlocos, "blocos", time.Second))
 
@@ -99,7 +106,7 @@ func main() {
 	aplicacao.GenesisTime = time.Date(2025, time.September, 14, 15, 10, 10, 0, time.UTC)
 	aplicacao.Intervalo = time.Second
 	aplicacao.Gateway = app.PorteiraDeCanal(sender, pk)
-	aplicacao.NomeMucua = "/jornal"
+	//aplicacao.NomeMucua = "/jornal"
 	aplicacao.CaminhoArquivos = "/home/lari/conteudojornal/"
 	aplicacao.CaminhoOptIn = "./optin.dat"
 	aplicacao.OptIn = app.CarregarOptIn("./optin.dat")
