@@ -68,7 +68,7 @@ func JornalParaBreeze(action []byte, epoch uint64) []byte {
 	}
 	bytes := []byte{0, breeze.IVoid}
 	util.PutUint64(epoch, &bytes)
-	bytes = append(bytes, 1, 3, 0, 0, attorney.VoidType) // código do protocolo jornal
+	bytes = append(bytes, 1, 13, 0, 0, attorney.VoidType) // código do protocolo jornal
 	bytes = append(bytes, action[8:]...)                  // conteúdo (pula época que já está no cabeçalho)
 	return bytes
 }

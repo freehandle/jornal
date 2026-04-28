@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"crypto/x509/pkix"
+	"encoding/asn1"
+	"encoding/pem"
 	"log"
 	"os"
 	"strings"
@@ -13,6 +16,48 @@ import (
 	"github.com/freehandle/jornal/indice"
 	"github.com/freehandle/jornal/protocolo/estado"
 )
+
+var oidKeyEd25519 = asn1.ObjectIdentifier{1, 3, 101, 112}
+
+func carregarOuCriarChave(caminho string) crypto.PrivateKey {
+	if dados, err := os.ReadFile(caminho); err == nil {
+		pk, err := crypto.ParsePEMPrivateKey(dados)
+		if err == nil {
+			log.Printf("chave carregada de %s (token: %s)", caminho, pk.PublicKey())
+			return pk
+		}
+		log.Printf("aviso: falha ao interpretar %s: %v — criando nova chave", caminho, err)
+	}
+
+	_, pk := crypto.RandomAsymetricKey()
+
+	var seed [32]byte
+	copy(seed[:], pk[:32])
+	seedASN1, err := asn1.Marshal(seed[:])
+	if err != nil {
+		log.Fatalf("erro ao codificar semente: %v", err)
+	}
+	type pkcs8 struct {
+		Version    int
+		Algo       pkix.AlgorithmIdentifier
+		PrivateKey []byte
+	}
+	pkcs8Key := pkcs8{
+		Version: 0,
+		Algo:    pkix.AlgorithmIdentifier{Algorithm: oidKeyEd25519},
+		PrivateKey: seedASN1,
+	}
+	der, err := asn1.Marshal(pkcs8Key)
+	if err != nil {
+		log.Fatalf("erro ao codificar chave PKCS8: %v", err)
+	}
+	block := &pem.Block{Type: "PRIVATE KEY", Bytes: der}
+	if err := os.WriteFile(caminho, pem.EncodeToMemory(block), 0600); err != nil {
+		log.Fatalf("erro ao gravar %s: %v", caminho, err)
+	}
+	log.Printf("nova chave criada e gravada em %s (token: %s)", caminho, pk.PublicKey())
+	return pk
+}
 
 func main() {
 	// lê variáveis de ambiente opcionais
@@ -27,8 +72,7 @@ func main() {
 		}
 	}
 
-	// chave privada do nó jornal — substitua pela sua chave real
-	pk := crypto.PrivateKeyFromString("e18e6528bd958000e51553f1828456c96509a3daa595421e24890d3153962297bb46f0c6a41ffc8ca179f3429d2584f103f66e540e21a197a45295ca8aa045de")
+	pk := carregarOuCriarChave("chave.pem")
 	token := pk.PublicKey()
 
 	// token do nó Breeze local (gateway)
@@ -55,8 +99,8 @@ func main() {
 	aplicacao.GenesisTime = time.Date(2025, time.September, 14, 15, 10, 10, 0, time.UTC)
 	aplicacao.Intervalo = time.Second
 	aplicacao.Gateway = app.PorteiraDeCanal(sender, pk)
-	aplicacao.NomeMucua = ""
-	aplicacao.CaminhoArquivos = "/home/lienko/setembro/arquivosjornal/"
+	aplicacao.NomeMucua = "/jornal"
+	aplicacao.CaminhoArquivos = "/home/lari/conteudojornal/"
 	aplicacao.CaminhoOptIn = "./optin.dat"
 	aplicacao.OptIn = app.CarregarOptIn("./optin.dat")
 
@@ -70,6 +114,6 @@ func main() {
 	}
 
 	fim := make(chan error, 1)
-	app.NovaMucua(ctx, aplicacao, 8080, "./app")
+	app.NovaMucua(ctx, aplicacao, 8030, "./app")
 	err = <-fim
 }
