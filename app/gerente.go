@@ -54,7 +54,10 @@ func ContrataGerente(app *Aplicacao, path, senhaGmail, usuarioGmail string, cred
 		Source:    app.Novidades,
 	}
 
-	gerente, _ := auth.LaunchManager(context.Background(), cfg, app.Novidades)
+	gerente, forward := auth.LaunchManager(context.Background(), cfg, app.Novidades)
+	app.Novidades = forward
+	gerente.AppName = appName
+	gerente.CookieName = appName
 	gerente.Cookies = doceria
 	gerente.Members = app
 	gerente.SafeAPIAddress = "http://localhost:8090"

@@ -26,10 +26,10 @@
             {{end}}
             <form action="{{.Hostname}}/catraca" method="post">
                 <label for="usuario" class="textoCard">Usuário</label>
-                <input class="textoCard" type="text" id="usuario" name="usuario" placeholder="Usuário"><br>
+                <input class="textoCard" type="text" id="usuario" name="handle" placeholder="Usuário"><br>
                 <br>
                 <label for="senha" class="textoCard">Senha</label>
-                <input class="textoCard" type="password" id="senha" name="senha" placeholder="Senha"><br>
+                <input class="textoCard" type="password" id="senha" name="password" placeholder="Senha"><br>
                 <div class="botoes">
                     <button class="cinzaClaro sombraP botaoSecundario tituloBotao" type="button"
                         onclick="window.location.href='{{.Hostname}}/signin/'">
