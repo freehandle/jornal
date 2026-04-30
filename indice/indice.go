@@ -40,6 +40,9 @@ type Indice struct {
 func (i *Indice) IncorporaAutor(arroba string, token crypto.Token) {
 	i.ArrobaParaToken[arroba] = token
 	i.TokenParaArroba[token] = arroba
+	if _, ok := i.ArrobaParaJornal[arroba]; !ok {
+		i.ArrobaParaJornal[arroba] = &Jornal{}
+	}
 }
 
 func (i *Indice) jornal(arroba string) *Jornal {

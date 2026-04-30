@@ -59,6 +59,7 @@ type ItemLanding struct {
 	Arroba          string
 	UltimaData      string
 	TiposPublicados string
+	Preview         string
 	ultimaEpoca     uint64
 }
 
@@ -120,24 +121,6 @@ func (a *Aplicacao) ManejoSignin(w http.ResponseWriter, r *http.Request) {
 		Seed:      hashEncoded,
 	}
 	if err := a.templates.ExecuteTemplate(w, "signin.html", view); err != nil {
-		log.Println(err)
-	}
-}
-
-func (a *Aplicacao) ManejoNovoUsuario(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.Error(w, "Método não permitido", http.StatusMethodNotAllowed)
-		return
-	}
-	arroba := r.FormValue("handle")
-	email := r.FormValue("email")
-	senha := r.FormValue("password")
-	ok := a.Gerente.OnboardSigner(arroba, email, senha)
-	aviso := InformacaoCabecalho{NomeMucua: a.NomeMucua}
-	if !ok {
-		aviso.Erro = "Confira seu email para ativar sua conta ou tente outro arroba."
-	}
-	if err := a.templates.ExecuteTemplate(w, "credenciais.html", aviso); err != nil {
 		log.Println(err)
 	}
 }
@@ -435,10 +418,18 @@ func (a *Aplicacao) ManejoInicio(w http.ResponseWriter, r *http.Request) {
 		if len(tipos) == 0 {
 			continue
 		}
+		var preview string
+		if len(jornal.Textos) > 0 {
+			ultimo := jornal.Textos[len(jornal.Textos)-1]
+			if a.Epoca >= ultimo.Data && a.Epoca-ultimo.Data < estado.LapsoDia {
+				preview = ultimo.Conteudo
+			}
+		}
 		jornais = append(jornais, ItemLanding{
 			Arroba:          arroba,
 			UltimaData:      dataFormatada(a, ultimaEpoca),
 			TiposPublicados: strings.Join(tipos, " · "),
+			Preview:         preview,
 			ultimaEpoca:     ultimaEpoca,
 		})
 	}

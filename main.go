@@ -106,7 +106,7 @@ func main() {
 	aplicacao.GenesisTime = time.Date(2025, time.September, 14, 15, 10, 10, 0, time.UTC)
 	aplicacao.Intervalo = time.Second
 	//aplicacao.NomeMucua = "/jornal"
-	aplicacao.CaminhoArquivos = "/home/lari/conteudojornal/"
+	aplicacao.CaminhoArquivos = "./conteudo/"
 	aplicacao.CaminhoOptIn = "./optin.dat"
 	aplicacao.OptIn = app.CarregarOptIn("./optin.dat")
 	aplicacao.Gateway = app.PorteiraDeCanal(sender, pk)

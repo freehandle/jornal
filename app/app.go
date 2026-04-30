@@ -90,10 +90,10 @@ func (p *Aplicacao) Rodar(ctx context.Context) {
 				continue
 			}
 			acao := novidade[1:]
-			// só voids do protocolo jornal [1, 3, 0, 0] interessam aqui;
+			// só voids do protocolo jornal [1, 13, 0, 0] interessam aqui;
 			// JoinNetwork/Grant/Revoke chegam pelo canal Eventos.
 			if attorney.Kind(acao) == attorney.VoidType &&
-				len(acao) > 13 && acao[10] == 1 && acao[11] == 3 && acao[12] == 0 && acao[13] == 0 {
+				len(acao) > 13 && acao[10] == 1 && acao[11] == 13 && acao[12] == 0 && acao[13] == 0 {
 				if a := BreezeParaJornal(acao); validador.Validate(a) {
 					p.Indice.IncorporaAcao(a)
 				}

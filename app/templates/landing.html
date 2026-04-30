@@ -46,7 +46,9 @@
                         <p class="landing-tipos">{{.TiposPublicados}}</p>
                     </div>
                     <p class="dataCard" style="padding-top:10px;">{{.UltimaData}}</p>
-                    <br>
+                    {{if .Preview}}
+                    <p class="textoCard textoLimitado">{{.Preview}}</p>
+                    {{end}}
                 </article>
             </a>
             {{end}}
