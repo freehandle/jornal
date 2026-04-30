@@ -28,6 +28,7 @@ type Aplicacao struct {
 	Token           crypto.Token
 	Gateway         *Porteira
 	Novidades       chan []byte
+	Eventos         chan auth.IdentityEvent
 	Estado          *estado.Estado
 	Indice          *indice.Indice
 	templates       *template.Template
@@ -49,7 +50,9 @@ func (p *Aplicacao) EpocaDaData(data time.Time) uint64 {
 	return uint64(data.Sub(p.GenesisTime) / p.Intervalo)
 }
 
-// Rodar processa o stream de ações recebidas do Breeze em loop
+// Rodar processa o stream de ações recebidas do Breeze em loop.
+// Consome dois canais: Novidades (bytes brutos: épocas + voids do protocolo
+// jornal) e Eventos (ações de identidade já parseadas pelo Gerente).
 func (p *Aplicacao) Rodar(ctx context.Context) {
 	validador := p.Estado.Validator()
 	for {
@@ -57,6 +60,18 @@ func (p *Aplicacao) Rodar(ctx context.Context) {
 		case <-ctx.Done():
 			log.Println("Aplicacao.Rodar: contexto encerrado")
 			return
+		case ev := <-p.Eventos:
+			switch ev.Action {
+			case auth.Join:
+				// usuário registrou handle no protocolo Axé: indexa a arroba
+				p.Indice.IncorporaAutor(ev.Handle, ev.Token)
+			case auth.Grant:
+				// signin do usuário neste app — Indice cria o jornal lazy quando
+				// chegar a primeira postagem; nada a fazer aqui por enquanto.
+			case auth.Revoke:
+				// signout do usuário — posts históricos permanecem; futuras
+				// ações já serão recusadas pelo validador da chain.
+			}
 		case novidade := <-p.Novidades:
 			if len(novidade) == 0 {
 				continue
@@ -72,35 +87,15 @@ func (p *Aplicacao) Rodar(ctx context.Context) {
 					p.Epoca = epoca
 					p.Estado.Epoca = epoca
 				}
-			} else {
-				acao := novidade[1:]
-				tipoHandles := attorney.Kind(acao)
-				switch tipoHandles {
-				case attorney.JoinNetworkType:
-					// usuário registrou handle no protocolo Axé (handles)
-					if usuario := attorney.ParseJoinNetwork(acao); usuario != nil {
-						p.Indice.IncorporaAutor(usuario.Handle, usuario.Author)
-						p.Gerente.HandleToToken[usuario.Handle] = usuario.Author
-						p.Gerente.TokenToHandle[usuario.Author] = usuario.Handle
-					}
-				case attorney.GrantPowerOfAttorneyType:
-					// usuário concedeu procuração ao app jornal
-					if grant := attorney.ParseGrantPowerOfAttorney(acao); grant != nil {
-						arroba, ok := p.Indice.TokenParaArroba[grant.Author]
-						if ok {
-							p.Gerente.Granted[arroba] = grant.Author
-							if p.Indice.ArrobaParaJornal[arroba] == nil {
-								p.Indice.ArrobaParaJornal[arroba] = &indice.Jornal{}
-							}
-						}
-					}
-				case attorney.VoidType:
-					// ação void: verifica se é do protocolo jornal [1, 3, 0, 0]
-					if len(acao) > 13 && acao[10] == 1 && acao[11] == 3 && acao[12] == 0 && acao[13] == 0 {
-						if a := BreezeParaJornal(acao); validador.Validate(a) {
-							p.Indice.IncorporaAcao(a)
-						}
-					}
+				continue
+			}
+			acao := novidade[1:]
+			// só voids do protocolo jornal [1, 3, 0, 0] interessam aqui;
+			// JoinNetwork/Grant/Revoke chegam pelo canal Eventos.
+			if attorney.Kind(acao) == attorney.VoidType &&
+				len(acao) > 13 && acao[10] == 1 && acao[11] == 3 && acao[12] == 0 && acao[13] == 0 {
+				if a := BreezeParaJornal(acao); validador.Validate(a) {
+					p.Indice.IncorporaAcao(a)
 				}
 			}
 		}

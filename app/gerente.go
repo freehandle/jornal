@@ -54,8 +54,9 @@ func ContrataGerente(app *Aplicacao, path, senhaGmail, usuarioGmail string, cred
 		Source:    app.Novidades,
 	}
 
-	gerente, forward := auth.LaunchManager(context.Background(), cfg, app.Novidades)
+	gerente, forward, eventos := auth.LaunchManager(context.Background(), cfg, app.Novidades)
 	app.Novidades = forward
+	app.Eventos = eventos
 	gerente.AppName = appName
 	gerente.CookieName = appName
 	gerente.Cookies = doceria
